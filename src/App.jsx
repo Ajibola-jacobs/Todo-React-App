@@ -1,10 +1,17 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 
 function App() {
 
   //useState is an array because todos is a list
-  const [todos, setTodos] = useState([]);
+  const [todos, setTodos] = useState(() => {
+  const savedTodos = localStorage.getItem("todos");
+  return savedTodos ? JSON.parse(savedTodos) : [];
+});
+
+useEffect(() => {
+  localStorage.setItem("todos", JSON.stringify(todos));
+}, [todos]);
 
   //useState is a text because input is written/typed
   const [input, setInput] = useState("");
@@ -39,6 +46,13 @@ function App() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
+                onKeyDown={
+                  (e) => {
+                    if (e.key === "Enter") {
+                      addTodo();
+                    }
+                  }
+                }
                 placeholder="Add new todo" className='grow px-3 py-2 border border-gray-400 rounded-l-lg focus:outline-none focus:ring ring-blue-500'/>
 
                 <button onClick={addTodo} className='bg-emerald-500 text-white rounded-r-lg hover:bg-emerald-600 px-4 py-2 cursor-pointer'>Add</button>
